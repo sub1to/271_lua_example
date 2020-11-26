@@ -36,7 +36,7 @@ end
 remove_checkpoint = function(id)
 	graphics.delete_checkpoint(id)
 	for k,v in pairs(g_checkpoints) do
-		if(v == checkpoint_id) then
+		if(v == id) then
 			g_checkpoints[k] = nil
 		end
 	end
