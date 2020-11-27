@@ -26,28 +26,39 @@ g_checkpoints = {}
 
 -- Any				create_checkpoint(Any type, v3 thisPos, v3 nextPos, float radius, int red, int green, int blue, int alpha, int reserved)
 add_checkpoint = function(t, pos1, pos2, radius, r, g, b, a, x)
-	local checkpoint_id = graphics.create_checkpoint(t, pos1, pos2, radius, r, g, b, a, x)
+	local checkpoint_id	= graphics.create_checkpoint(t, pos1, pos2, radius, r, g, b, a, x)
+	local blip_id		= ui.add_blip_for_coord(pos1)
 	
-	table.insert(g_checkpoints, checkpoint_id)
+	ui.set_blip_sprite(blip_id, 8)
+	ui.set_blip_colour(blip_id, 0x00FF00FF)
+	ui.set_blip_route(blip_id, true)
+	ui.set_blip_route_color(blip_id, 0x00FF00FF)
+	
+	g_checkpoints[checkpoint_id] =  {checkpoint = checkpoint_id, blip = blip_id}
 	
 	return checkpoint_id
 end
 
 remove_checkpoint = function(id)
-	graphics.delete_checkpoint(id)
-	for k,v in pairs(g_checkpoints) do
-		if(v == id) then
-			g_checkpoints[k] = nil
-		end
+	if g_checkpoints[id] == nil then
+		return false
 	end
+	
+	local	obj	= g_checkpoints[id];
+
+	graphics.delete_checkpoint(obj.checkpoint)
+	ui.remove_blip(obj.blip)
+	
+	g_checkpoints[id]	= nil
+	
+	return true
 end
 
 cleanup_checkpoints = function()
 	if(next(g_checkpoints) ~= nil) then
 		ui.notify_above_map("Cleaning up leftover checkpoints", "Cleanup", 140)
 		for k,v in pairs(g_checkpoints) do
-			graphics.delete_checkpoint(v)
-			g_checkpoints[k] = nil
+			remove_checkpoint(k)
 		end
 	end
 end
