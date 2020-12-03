@@ -162,6 +162,22 @@ no_hud = function(feat)
 	end
 end
 
+io_test = function(feat)
+	local path = utils.get_appdata_path("PopstarDevs\\2Take1Menu", "iotest.txt")
+	
+	--local f = io.open("D:\\iotest.txt", "w")
+	local f = io.open(path, "w")
+	
+	if f == nil then
+		ui.notify_above_map("Failed to open file", "IO Test", 140)
+		return
+	end
+	
+	f:write("test123\n")
+	f:close()
+	
+end
+
 function main()
 	
 	-- You could do the same thing directly in the feature handler, but this demonstrates how a task can run in it's own (cooperative) thread
@@ -192,6 +208,7 @@ function main()
 	menu.add_feature("weapon impact test", "toggle", 0, weapon_impact_test)
 	menu.add_feature("marker", "toggle", 0, marker_test)
 	menu.add_feature("Hide HUD", "toggle", 0, no_hud)
+	menu.add_feature("IO Test", "action", 0, io_test)
 end
 
 main()
