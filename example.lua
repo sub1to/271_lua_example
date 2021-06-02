@@ -178,7 +178,28 @@ io_test = function(feat)
 	
 end
 
+int_val_test = function(feat)
+	ui.notify_above_map(string.format("val: %d\nmin: %d\nmax: %d", feat.value, feat.min, feat.max), "Integer Value Test", 140)
+end
+
+float_val_test = function(feat)
+	ui.notify_above_map(string.format("val: %f\nmin: %f\nmax: %f\nmod: %f", feat.value, feat.min, feat.max, feat.mod), "Float Value Test", 140)
+end
+
+slider_test = function(feat)
+	ui.notify_above_map(string.format("val: %f\nmin: %f\nmax: %f\nmod: %f", feat.value, feat.min, feat.max, feat.mod), "Slider Test", 140)
+end
+
+str_val_test = function(feat)
+	ui.notify_above_map(string.format("val: %d\nmin: %d\nmax: %d", feat.value, feat.min, feat.max), "String Value Test", 140)
+end
+
+slider_mod = function(s, e, steps)
+	return (e - s) / steps;
+end
+
 function main()
+	local f
 	
 	-- You could do the same thing directly in the feature handler, but this demonstrates how a task can run in it's own (cooperative) thread
 	menu.add_feature("parachute yield", "action", 0, function(feat)
@@ -209,6 +230,27 @@ function main()
 	menu.add_feature("marker", "toggle", 0, marker_test)
 	menu.add_feature("Hide HUD", "toggle", 0, no_hud)
 	menu.add_feature("IO Test", "action", 0, io_test)
+	
+	-- feat value examples
+	f = menu.add_feature("action_value_i test", "action_value_i", 0, int_val_test)
+	f.min = 1
+	f.max = 10
+	f.value = 5
+	
+	f = menu.add_feature("action_value_f test", "action_value_f", 0, float_val_test)
+	f.min = 1.1
+	f.max = 10.3
+	f.mod = 0.2
+	f.value = 2.2
+	
+	f = menu.add_feature("action_slider test", "action_slider", 0, slider_test)
+	f.min = 1.1
+	f.max = 10.3
+	f.mod = slider_mod(1.1, 10.3, 10)
+	f.value = 1.1
+	
+	f = menu.add_feature("action_value_str test", "action_value_str", 0, str_val_test)
+	f.set_str_data(f, {"one", "two"})
 end
 
 main()
