@@ -194,6 +194,30 @@ str_val_test = function(feat)
 	ui.notify_above_map(string.format("val: %d\nmin: %d\nmax: %d", feat.value, feat.min, feat.max), "String Value Test", 140)
 end
 
+vec_test = function(feat)
+	local vec1 = v3()
+	local vec2 = v3()
+
+	vec1.x = 2
+	vec1.y = 1
+	vec1.z = 1
+
+	vec2.x = 1
+	vec2.y = 1
+	vec2.z = 1
+
+	local vec3 = vec1 + vec2
+	local vec4 = v2() + vec3
+	local vec5 = vec1 + 5.0
+
+	ui.notify_above_map(tostring(vec1), "vec1", 140)
+	ui.notify_above_map(tostring(vec2), "vec2", 140)
+	ui.notify_above_map(tostring(vec3), "vec3", 140)
+	ui.notify_above_map(tostring(vec4), "vec4", 140)
+	ui.notify_above_map(tostring(vec5), "vec5", 140)
+	ui.notify_above_map(string.format("%f", vec3:magnitude(vec2)), "vec3:magnitude(vec2)", 140)
+end
+
 slider_mod = function(s, e, steps)
 	return (e - s) / steps;
 end
@@ -251,6 +275,18 @@ function main()
 	
 	f = menu.add_feature("action_value_str test", "action_value_str", 0, str_val_test)
 	f.set_str_data(f, {"one", "two"})
+	
+	f = menu.add_player_feature("PlayerFeat action_value_str", "action_value_str", 0, nil)
+	f:set_str_data({"one", "two"})
+	
+	f = menu.add_player_feature("PlayerFeat action_value_i", "action_value_i", 0, nil)
+	
+	f.max = 10
+	f.value = 5
+	
+	menu.add_feature("Error", "action", 0, function(feat) ("Lol").Fuck() end)
+	menu.add_feature("Vector Test", "action", 0, vec_test)
 end
 
 main()
+warn("test 123", "asdf")
