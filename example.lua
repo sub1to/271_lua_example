@@ -56,7 +56,7 @@ end
 
 cleanup_checkpoints = function()
 	if(next(g_checkpoints) ~= nil) then
-		ui.notify_above_map("Cleaning up leftover checkpoints", "Cleanup", 140)
+		menu.notify("Cleaning up leftover checkpoints", "Cleanup")
 		for k,v in pairs(g_checkpoints) do
 			remove_checkpoint(k)
 		end
@@ -88,7 +88,7 @@ checkpoint_test = function(feat)
 		while true do
 			local pos = v2() + player.get_player_coords(player.player_id())
 			if pos:magnitude(v2() + context.pos) < 1 then
-				ui.notify_above_map("deleting checkpoint", "", 140)
+				menu.notify("deleting checkpoint", "")
 				remove_checkpoint(context.checkpoint_id)
 				break
 			end
@@ -122,7 +122,7 @@ checkpoint_test_2 = function(feat)
 	while true do
 		local player_pos = v2() + player.get_player_coords(player.player_id())
 		if player_pos:magnitude(v2() + pos) < 1 then
-			ui.notify_above_map("deleting checkpoint", "", 140)
+			menu.notify("deleting checkpoint", "")
 			remove_checkpoint(checkpoint_id)
 			break
 		end
@@ -137,7 +137,7 @@ weapon_impact_test = function(feat)
 	s,p = ped.get_ped_last_weapon_impact(player.get_player_ped(player.player_id()));
 	
 	if s then
-		ui.notify_above_map(string.format("%f %f %f", p.x, p.y, p.z), "weapon impact", 140)
+		menu.notify(string.format("%f %f %f", p.x, p.y, p.z), "weapon impact")
 	end
 	
 	if feat.on then
@@ -169,29 +169,30 @@ io_test = function(feat)
 	local f = io.open(path, "w")
 	
 	if f == nil then
-		ui.notify_above_map("Failed to open file", "IO Test", 140)
+		menu.notify("Failed to open file", "IO Test")
 		return
 	end
 	
 	f:write("test123\n")
 	f:close()
+	menu.notify("Success", "IO Test")
 	
 end
 
 int_val_test = function(feat)
-	ui.notify_above_map(string.format("val: %d\nmin: %d\nmax: %d", feat.value, feat.min, feat.max), "Integer Value Test", 140)
+	menu.notify(string.format("val: %d\nmin: %d\nmax: %d", feat.value, feat.min, feat.max), "Integer Value Test")
 end
 
 float_val_test = function(feat)
-	ui.notify_above_map(string.format("val: %f\nmin: %f\nmax: %f\nmod: %f", feat.value, feat.min, feat.max, feat.mod), "Float Value Test", 140)
+	menu.notify(string.format("val: %f\nmin: %f\nmax: %f\nmod: %f", feat.value, feat.min, feat.max, feat.mod), "Float Value Test")
 end
 
 slider_test = function(feat)
-	ui.notify_above_map(string.format("val: %f\nmin: %f\nmax: %f\nmod: %f", feat.value, feat.min, feat.max, feat.mod), "Slider Test", 140)
+	menu.notify(string.format("val: %f\nmin: %f\nmax: %f\nmod: %f", feat.value, feat.min, feat.max, feat.mod), "Slider Test")
 end
 
 str_val_test = function(feat)
-	ui.notify_above_map(string.format("val: %d\nmin: %d\nmax: %d", feat.value, feat.min, feat.max), "String Value Test", 140)
+	menu.notify(string.format("val: %d\nmin: %d\nmax: %d", feat.value, feat.min, feat.max), "String Value Test")
 end
 
 vec_test = function(feat)
@@ -210,12 +211,23 @@ vec_test = function(feat)
 	local vec4 = v2() + vec3
 	local vec5 = vec1 + 5.0
 
-	ui.notify_above_map(tostring(vec1), "vec1", 140)
-	ui.notify_above_map(tostring(vec2), "vec2", 140)
-	ui.notify_above_map(tostring(vec3), "vec3", 140)
-	ui.notify_above_map(tostring(vec4), "vec4", 140)
-	ui.notify_above_map(tostring(vec5), "vec5", 140)
-	ui.notify_above_map(string.format("%f", vec3:magnitude(vec2)), "vec3:magnitude(vec2)", 140)
+	menu.notify(tostring(vec1), "vec1")
+	menu.notify(tostring(vec2), "vec2")
+	menu.notify(tostring(vec3), "vec3")
+	menu.notify(tostring(vec4), "vec4")
+	menu.notify(tostring(vec5), "vec5")
+	menu.notify(string.format("%f", vec3:magnitude(vec2)), "vec3:magnitude(vec2)")
+end
+
+notify_test = function(feat)
+	--#### void			notify(string message, string|nil title, uint32_t|nil seconds, uint32_t|nil color)
+	menu.notify("message")
+	menu.notify("message + title", "title")
+	menu.notify("message + title + 2 seconds", "title", 2)
+	menu.notify("message + title + 2 seconds + green", "title", 2, 0xFF00)
+	menu.notify("message + nil + 2 seconds + green", nil, 2, 0xFF00)
+	menu.notify("message + nil + nil + green", nil, nil, 0xFF00)
+	menu.notify("message + nil + nil + nil", nil, nil, nil)
 end
 
 slider_mod = function(s, e, steps)
@@ -229,7 +241,7 @@ function main()
 	menu.add_feature("parachute yield", "action", 0, function(feat)
 		if parachuter_thread ~= 0 then
 			if menu.has_thread_finished(parachuter_thread) then
-				ui.notify_above_map("Parachuter has been spawned", "", 140)
+				menu.notify("Parachuter has been spawned", "")
 				parachuter_thread = 0
 				return HANDLER_POP
 			end
@@ -286,6 +298,7 @@ function main()
 	
 	menu.add_feature("Error", "action", 0, function(feat) ("Lol").Fuck() end)
 	menu.add_feature("Vector Test", "action", 0, vec_test)
+	menu.add_feature("Notify Test", "action", 0, notify_test)
 end
 
 main()
