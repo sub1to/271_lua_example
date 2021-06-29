@@ -254,6 +254,76 @@ local head_blend_test = function(feat)
 	))
 end
 
+local is_mp_model = function(h)
+	-- 0x9c9effd8 (-1667301416) => mp_f_freemode_01
+	-- 0x705e61f2 (1885233650)  => mp_m_freemode_01
+	return h == 0x9c9effd8 or h == 0x705e61f2
+end
+
+local steal_face = function(feat, p)
+	local playerPed
+	local myPed
+	local blend
+	local overlay = {}
+
+	playerPed	= player.get_player_ped(p)
+	myPed		= player.get_player_ped(player.player_id())
+	
+	if not is_mp_model(entity.get_entity_model_hash(playerPed)) or not is_mp_model(entity.get_entity_model_hash(myPed)) then
+		menu.notify("Wrong model")
+		return
+	end
+	
+	blend		= ped.get_ped_head_blend_data(playerPed)
+	
+	if blend == nil then
+		menu.notify("No face :(")
+		return
+	end
+	
+	ped.set_ped_head_blend_data(
+		myPed,
+		blend.shape_first,
+		blend.shape_second,
+		blend.shape_third,
+		blend.skin_first,
+		blend.skin_second,
+		blend.skin_third,
+		blend.mix_shape,
+		blend.mix_skin,
+		blend.mix_third
+	)
+	
+	ped.set_ped_eye_color(myPed, ped.get_ped_eye_color(playerPed))
+	ped.set_ped_hair_colors(myPed, ped.get_ped_hair_color(playerPed), ped.get_ped_hair_highlight_color(playerPed))
+	
+	for i=0,19,1 do
+		ped.set_ped_face_feature(
+			myPed,
+			i,
+			ped.get_ped_face_feature(playerPed, i)
+		)
+	end
+	
+	for i=0,12,1 do
+		ped.set_ped_head_overlay(
+			myPed,
+			i,
+			ped.get_ped_head_overlay_value(playerPed, i) or 0,
+			ped.get_ped_head_overlay_opacity(playerPed, i) or 0
+		)
+		ped.set_ped_head_overlay_color(
+			myPed,
+			i,
+			ped.get_ped_head_overlay_color_type(playerPed, i) or 0,
+			ped.get_ped_head_overlay_color(playerPed, i) or 0,
+			ped.get_ped_head_overlay_highlight_color(playerPed, i) or 0
+		)
+	end
+	
+	menu.notify("enjoy the new face")
+end
+
 local slider_mod = function(s, e, steps)
 	return (e - s) / steps;
 end
@@ -324,6 +394,8 @@ local function main()
 	menu.add_feature("Vector Test", "action", 0, vec_test)
 	menu.add_feature("Notify Test", "action", 0, notify_test)
 	menu.add_feature("Head Blend", "action", 0, head_blend_test)
+	
+	menu.add_player_feature("steal face", "action", 0, steal_face)
 end
 
 main()
