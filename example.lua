@@ -1,5 +1,5 @@
-parachuter_thread = 0
-para_test_thread = function(feat)
+local parachuter_thread = 0
+local para_test_thread = function(feat)
 	local model = 0xc79f6928
 	local parachute = 0xfbab5776
 	
@@ -22,10 +22,10 @@ para_test_thread = function(feat)
 	streaming.set_model_as_no_longer_needed(model)
 end
 
-g_checkpoints = {}
+local g_checkpoints = {}
 
 -- Any				create_checkpoint(Any type, v3 thisPos, v3 nextPos, float radius, int red, int green, int blue, int alpha, int reserved)
-add_checkpoint = function(t, pos1, pos2, radius, r, g, b, a, x)
+local add_checkpoint = function(t, pos1, pos2, radius, r, g, b, a, x)
 	local checkpoint_id	= graphics.create_checkpoint(t, pos1, pos2, radius, r, g, b, a, x)
 	local blip_id		= ui.add_blip_for_coord(pos1)
 	
@@ -39,7 +39,7 @@ add_checkpoint = function(t, pos1, pos2, radius, r, g, b, a, x)
 	return checkpoint_id
 end
 
-remove_checkpoint = function(id)
+local remove_checkpoint = function(id)
 	if g_checkpoints[id] == nil then
 		return false
 	end
@@ -54,7 +54,7 @@ remove_checkpoint = function(id)
 	return true
 end
 
-cleanup_checkpoints = function()
+local cleanup_checkpoints = function()
 	if(next(g_checkpoints) ~= nil) then
 		menu.notify("Cleaning up leftover checkpoints", "Cleanup")
 		for k,v in pairs(g_checkpoints) do
@@ -63,7 +63,7 @@ cleanup_checkpoints = function()
 	end
 end
 
-checkpoint_test = function(feat)
+local checkpoint_test = function(feat)
 	local player_id = player.player_id()
 	local player_ped = player.get_player_ped(player_id)
 	local pos = player.get_player_coords(player_id)
@@ -98,7 +98,7 @@ checkpoint_test = function(feat)
 	end, { pos = pos, checkpoint_id = checkpoint_id })
 end
 
-checkpoint_test_2 = function(feat)
+local checkpoint_test_2 = function(feat)
 	local player_id = player.player_id()
 	local player_ped = player.get_player_ped(player_id)
 	local pos = player.get_player_coords(player_id)
@@ -131,7 +131,7 @@ checkpoint_test_2 = function(feat)
 	end
 end
 
-weapon_impact_test = function(feat)
+local weapon_impact_test = function(feat)
 	local s, p;
 	
 	s,p = ped.get_ped_last_weapon_impact(player.get_player_ped(player.player_id()));
@@ -145,7 +145,7 @@ weapon_impact_test = function(feat)
 	end
 end
 
-marker_test = function(feat)
+local marker_test = function(feat)
 	local offset = v3(0, 0, 2)
 	graphics.draw_marker(0, player.get_player_coords(player.player_id()) + offset, v3(), v3(), v3(1), 255, 0, 0, 255, true, true, 0, true, nil, nil, false)
 	if feat.on then
@@ -153,7 +153,7 @@ marker_test = function(feat)
 	end
 end
 
-no_hud = function(feat)
+local no_hud = function(feat)
 	
 	ui.hide_hud_and_radar_this_frame()
 	
@@ -162,7 +162,7 @@ no_hud = function(feat)
 	end
 end
 
-io_test = function(feat)
+local io_test = function(feat)
 	local path = utils.get_appdata_path("PopstarDevs\\2Take1Menu", "iotest.txt")
 	
 	--local f = io.open("D:\\iotest.txt", "w")
@@ -179,23 +179,23 @@ io_test = function(feat)
 	
 end
 
-int_val_test = function(feat)
+local int_val_test = function(feat)
 	menu.notify(string.format("val: %d\nmin: %d\nmax: %d", feat.value, feat.min, feat.max), "Integer Value Test")
 end
 
-float_val_test = function(feat)
+local float_val_test = function(feat)
 	menu.notify(string.format("val: %f\nmin: %f\nmax: %f\nmod: %f", feat.value, feat.min, feat.max, feat.mod), "Float Value Test")
 end
 
-slider_test = function(feat)
+local slider_test = function(feat)
 	menu.notify(string.format("val: %f\nmin: %f\nmax: %f\nmod: %f", feat.value, feat.min, feat.max, feat.mod), "Slider Test")
 end
 
-str_val_test = function(feat)
+local str_val_test = function(feat)
 	menu.notify(string.format("val: %d\nmin: %d\nmax: %d", feat.value, feat.min, feat.max), "String Value Test")
 end
 
-vec_test = function(feat)
+local vec_test = function(feat)
 	local vec1 = v3()
 	local vec2 = v3()
 
@@ -219,7 +219,7 @@ vec_test = function(feat)
 	menu.notify(string.format("%f", vec3:magnitude(vec2)), "vec3:magnitude(vec2)")
 end
 
-notify_test = function(feat)
+local notify_test = function(feat)
 	--#### void			notify(string message, string|nil title, uint32_t|nil seconds, uint32_t|nil color)
 	menu.notify("message")
 	menu.notify("message + title", "title")
@@ -230,11 +230,35 @@ notify_test = function(feat)
 	menu.notify("message + nil + nil + nil", nil, nil, nil)
 end
 
-slider_mod = function(s, e, steps)
+local head_blend_test = function(feat)
+	--#### [...]|nil			get_ped_head_blend_data(Ped ped)
+	
+	local blend = ped.get_ped_head_blend_data(player.get_player_ped(player.player_id()))
+	
+	if blend == nil then
+		print("blend is nil")
+		return HANDLER_POP
+	end
+	
+	print(string.format(
+		"%i %i %i %i %i %i %f %f %f",
+		blend.shape_first,
+		blend.shape_second,
+		blend.shape_third,
+		blend.skin_first,
+		blend.skin_second,
+		blend.skin_third,
+		blend.mix_shape,
+		blend.mix_skin,
+		blend.mix_third
+	))
+end
+
+local slider_mod = function(s, e, steps)
 	return (e - s) / steps;
 end
 
-function main()
+local function main()
 	local f
 	
 	-- You could do the same thing directly in the feature handler, but this demonstrates how a task can run in it's own (cooperative) thread
@@ -299,6 +323,7 @@ function main()
 	menu.add_feature("Error", "action", 0, function(feat) ("Lol").Fuck() end)
 	menu.add_feature("Vector Test", "action", 0, vec_test)
 	menu.add_feature("Notify Test", "action", 0, notify_test)
+	menu.add_feature("Head Blend", "action", 0, head_blend_test)
 end
 
 main()
