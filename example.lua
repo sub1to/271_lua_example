@@ -324,6 +324,57 @@ local steal_face = function(feat, p)
 	menu.notify("enjoy the new face")
 end
 
+local tuner_unlocks_raw = function(feat)
+	--[[
+		else if (iParam0 >= 31707 && iParam0 < 32283)
+		{
+			iVar26 = STATS::_GET_NGSTAT_BOOL_HASH((iParam0 - 31707), 0, 1, iParam2, "_TUNERPSTAT_BOOL");
+			iVar1 = ((iParam0 - 31707) - STATS::_STAT_GET_PACKED_BOOL_MASK((iParam0 - 31707)) * 64);
+			iVar0 = STATS::STAT_SET_BOOL_MASKED(iVar26, bParam1, iVar1, iParam3);
+		}
+	--]]
+	
+	local h0 = gameplay.get_hash_key("MP0_TUNERPSTAT_BOOL0")
+	local h1 = gameplay.get_hash_key("MP0_TUNERPSTAT_BOOL1")
+	local h2 = gameplay.get_hash_key("MP0_TUNERPSTAT_BOOL2")
+	
+	for i=0,63,1 do
+		stats.stat_set_masked_bool(h0, true, i, 1, true)
+		stats.stat_set_masked_bool(h1, true, i, 1, true)
+		stats.stat_set_masked_bool(h2, true, i, 1, true)
+	end
+	
+	menu.notify("Tuner bools unlocked")
+end
+
+local tuner_unlocks = function(feat)
+	local	hash
+	local	mask
+	
+	for i=0,576,1 do -- 32283 - 31707 = 576
+		hash, mask = stats.stat_get_bool_hash_and_mask("_TUNERPSTAT_BOOL", i, 0)
+		stats.stat_set_masked_bool(hash, true, mask, 1, true)
+	end
+	
+	menu.notify("Tuner bools unlocked")
+	
+	--[[
+		else if (iParam0 >= 7681 && iParam0 < 9361)
+		{
+			fVar0 = STATS::_GET_NGSTAT_INT_HASH((iParam0 - 7681), 0, 1, iParam2, "_BIKEPSTAT_INT");
+			iVar1 = ((iParam0 - 7681) - STATS::_STAT_GET_PACKED_INT_MASK((iParam0 - 7681)) * 8) * 8;
+		}
+		
+		hash, mask = stats.stat_get_int_hash_and_mask("_BIKEPSTAT_INT", 1, 0)
+		hash, mask = stats.stat_get_int_hash_and_mask("_BIKEPSTAT_INT", 65, 0)
+		hash, mask = stats.stat_get_int_hash_and_mask("_BIKEPSTAT_INT", 123, 0)
+		hash, mask = stats.stat_get_int_hash_and_mask("_BIKEPSTAT_INT", 321, 0)
+		hash, mask = stats.stat_get_int_hash_and_mask("_BIKEPSTAT_INT", 512, 0)
+		hash, mask = stats.stat_get_int_hash_and_mask("_BIKEPSTAT_INT", 666, 0)
+	--]]
+	
+end
+
 local slider_mod = function(s, e, steps)
 	return (e - s) / steps;
 end
@@ -396,6 +447,9 @@ local function main()
 	menu.add_feature("Head Blend", "action", 0, head_blend_test)
 	
 	menu.add_player_feature("steal face", "action", 0, steal_face)
+	
+	menu.add_feature("Tuner Unlocks Raw", "action", 0, tuner_unlocks_raw)
+	menu.add_feature("Tuner Unlocks", "action", 0, tuner_unlocks)
 end
 
 main()
