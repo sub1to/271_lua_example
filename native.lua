@@ -72,3 +72,22 @@ menu.add_feature("native tp test", "action", 0, function(f)
 	system.wait(1000)
 	native.call(0x239A3351AC1DA385, playerPed, playerCoord, false, false, false)
 end)
+
+menu.add_feature("native stats test", "action", 0, function(f)
+	-- 0x8B0FACEFC36C824B STAT_GET_DATE
+	local out = native.ByteBuffer64()
+	
+	native.call(0x8B0FACEFC36C824B, gameplay.get_hash_key("MPPLY_STARTED_MP"), out, 7, -1)
+	
+	menu.notify(string.format("year: %i\nmonth: %i\nday: %i\nhour: %i\nminute: %i\nsecond: %i\nmillisecond: %i",
+		out:__tointeger(0),
+		out:__tointeger(1),
+		out:__tointeger(2),
+		out:__tointeger(3),
+		out:__tointeger(4),
+		out:__tointeger(5),
+		out:__tointeger(6),
+		out:__tointeger(7)
+	))
+	
+end)
