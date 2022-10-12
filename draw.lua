@@ -36,17 +36,23 @@ local function main()
 			local h = scriptdraw.size_pixel_to_rel_y(5)
 			local s = v2(-.2, -.7)
 			local e = v2(0, -.5)
-			local m = v2(s.x + (e.x - s.x) * 2.0, s.y)
-			local r = 64
+			local p = {
+				s,
+				v2(s.x + (e.x - s.x) * 2.0, s.y),
+				v2(s.x, e.y),
+				e,
+			}
 			
-			scriptdraw.draw_curved_line(s, e, m, 0xAA00FF00, r);
+			scriptdraw.draw_curved_line(p, 0xAA00FF00, 64)
 			
-			scriptdraw.draw_line(s, m, 1, 0x880000FF);
-			scriptdraw.draw_line(e, m, 1, 0x880000FF);
+			scriptdraw.draw_line(p[1], p[2], 1, 0x880000FF)
+			scriptdraw.draw_line(p[2], p[3], 1, 0x880000FF)
+			scriptdraw.draw_line(p[3], p[4], 1, 0x880000FF)
 			
-			scriptdraw.draw_circle(s, h, 0x880000FF);
-			scriptdraw.draw_circle(e, h, 0x880000FF);
-			scriptdraw.draw_circle(m, h, 0x880000FF);
+			scriptdraw.draw_circle(p[1], h, 0x880000FF)
+			scriptdraw.draw_circle(p[2], h, 0x880000FF)
+			scriptdraw.draw_circle(p[3], h, 0x880000FF)
+			scriptdraw.draw_circle(p[4], h, 0x880000FF)
 			
 			
 			system.wait(0)
