@@ -32,6 +32,23 @@ local function main()
 				0xAAFFFFFF
 			)
 			
+			-- bezier curve
+			local h = scriptdraw.size_pixel_to_rel_y(5)
+			local s = v2(-.2, -.7)
+			local e = v2(0, -.5)
+			local m = v2(s.x + (e.x - s.x) * 2.0, s.y)
+			local r = 64
+			
+			scriptdraw.draw_curved_line(s, e, m, 0xAA00FF00, r);
+			
+			scriptdraw.draw_line(s, m, 1, 0x880000FF);
+			scriptdraw.draw_line(e, m, 1, 0x880000FF);
+			
+			scriptdraw.draw_circle(s, h, 0x880000FF);
+			scriptdraw.draw_circle(e, h, 0x880000FF);
+			scriptdraw.draw_circle(m, h, 0x880000FF);
+			
+			
 			system.wait(0)
 		end
 	end).on=true
