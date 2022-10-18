@@ -147,9 +147,9 @@ end
 
 local marker_test = function(feat)
 	local offset = v3(0, 0, 2)
-	graphics.draw_marker(0, player.get_player_coords(player.player_id()) + offset, v3(), v3(), v3(1), 255, 0, 0, 255, true, true, 0, true, nil, nil, false)
-	if feat.on then
-		return HANDLER_CONTINUE
+	while feat.on do
+		graphics.draw_marker(0, player.get_player_coords(player.player_id()) + offset, v3(), v3(), v3(1), 255, 0, 0, 255, true, true, 0, true, nil, nil, false)
+		system.wait(0)
 	end
 end
 
@@ -163,9 +163,11 @@ local no_hud = function(feat)
 end
 
 local io_test = function(feat)
-	local path = utils.get_appdata_path("PopstarDevs\\2Take1Menu", "iotest.txt")
-	
-	--local f = io.open("D:\\iotest.txt", "w")
+	--local path = utils.get_appdata_path("PopstarDevs\\2Take1Menu", "iotest.txt")
+	local path = "test\\iotest.txt"
+	--local path = "test/iotest.txt"
+	--local path = "D:/iotest.txt";
+
 	local f = io.open(path, "w")
 	
 	if f == nil then
@@ -173,7 +175,7 @@ local io_test = function(feat)
 		return
 	end
 	
-	f:write("test123\n")
+	f:write("123 123 123\n")
 	f:close()
 	menu.notify("Success", "IO Test")
 	
@@ -192,7 +194,15 @@ local slider_test = function(feat)
 end
 
 local str_val_test = function(feat)
-	menu.notify(string.format("val: %d\nmin: %d\nmax: %d", feat.value, feat.min, feat.max), "String Value Test")
+	local tab = feat.str_data
+	menu.notify(string.format("val: %d\nmin: %d\nmax: %d\nstr: %s", feat.value, feat.min, feat.max, tab[feat.value + 1]), "String Value Test")
+	
+	feat.str_data = {"first", "second"}
+end
+
+local plr_str_val_test = function(feat, p)
+	local tab = feat.str_data
+	menu.notify(string.format("val: %d\nmin: %d\nmax: %d\nstr: %s", feat.value, feat.min, feat.max, tab[feat.value + 1]), "String Value Test")
 end
 
 local vec_test = function(feat)
@@ -375,6 +385,24 @@ local tuner_unlocks = function(feat)
 	
 end
 
+local timecycle_test = function(feat)
+	local weather	= gameplay.get_hash_key("EXTRASUNNY")
+	
+	for region=0,1 do
+		for frame=0,12 do
+			timecycle.set_timecycle_keyframe_var(weather, region, frame, "sky_sun_col_r", 1.0);
+			timecycle.set_timecycle_keyframe_var(weather, region, frame, "sky_sun_col_g", 0.0);
+			timecycle.set_timecycle_keyframe_var(weather, region, frame, "sky_sun_col_b", 0.0);
+
+			timecycle.set_timecycle_keyframe_var(weather, region, frame, "sky_sun_disc_col_r", 1.0);
+			timecycle.set_timecycle_keyframe_var(weather, region, frame, "sky_sun_disc_col_g", 0.0);
+			timecycle.set_timecycle_keyframe_var(weather, region, frame, "sky_sun_disc_col_b", 0.0);
+
+			timecycle.set_timecycle_keyframe_var(weather, region, frame, "sky_sun_disc_size", 20.0);
+		end
+	end
+end
+
 local slider_mod = function(s, e, steps)
 	return (e - s) / steps;
 end
@@ -433,15 +461,18 @@ local function main()
 	f = menu.add_feature("action_value_str test", "action_value_str", 0, str_val_test)
 	f.set_str_data(f, {"one", "two"})
 	
-	f = menu.add_player_feature("PlayerFeat action_value_str", "action_value_str", 0, nil)
-	f:set_str_data({"one", "two"})
+	f = menu.add_player_feature("PlayerFeat action_value_str", "action_value_str", 0, plr_str_val_test)
+	f.str_data = {"one", "two"}
 	
 	f = menu.add_player_feature("PlayerFeat action_value_i", "action_value_i", 0, nil)
 	
 	f.max = 10
 	f.value = 5
 	
-	menu.add_feature("Error", "action", 0, function(feat) ("Lol").Fuck() end)
+	local fuckingerror = function(feat) ("Lol").Fuck() end
+	local fuck = function() fuckingerror() end
+	local fu = function() fuck() end
+	menu.add_feature("Error", "action", 0, fu)
 	menu.add_feature("Vector Test", "action", 0, vec_test)
 	menu.add_feature("Notify Test", "action", 0, notify_test)
 	menu.add_feature("Head Blend", "action", 0, head_blend_test)
@@ -450,6 +481,8 @@ local function main()
 	
 	menu.add_feature("Tuner Unlocks Raw", "action", 0, tuner_unlocks_raw)
 	menu.add_feature("Tuner Unlocks", "action", 0, tuner_unlocks)
+	
+	menu.add_feature("Timecycle Test", "action", 0, timecycle_test)
 end
 
 main()
